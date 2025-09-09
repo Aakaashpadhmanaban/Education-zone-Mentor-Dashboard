@@ -5,6 +5,7 @@ import { componentTagger } from "lovable-tagger";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: "/Education-zone-Mentor-Dashboard/", // <-- Add this line
   server: {
     host: "::",
     port: 8080,
