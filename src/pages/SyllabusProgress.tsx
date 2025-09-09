@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { TimelineModal } from '@/components/syllabus/TimelineModal';
 
 export default function SyllabusProgress() {
   const { students, subjects } = useStore();
@@ -196,78 +196,11 @@ export default function SyllabusProgress() {
       )}
 
       {/* Timeline Modal */}
-      <Dialog open={showTimeline} onOpenChange={setShowTimeline}>
-        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto bg-popover">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
-                {selectedStudent?.fullName.split(' ').map((n: string) => n[0]).join('')}
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold">{selectedStudent?.fullName}'s Timeline</h3>
-                <p className="text-sm text-muted-foreground">
-                  Grade {selectedStudent?.grade} • {selectedStudent?.board} • Batch {selectedStudent?.batch}
-                </p>
-              </div>
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="mt-6">
-            {/* Subject Tabs */}
-            <div className="flex gap-2 mb-6">
-              {getStudentSubjects(selectedStudent?.id || '').map((subject) => (
-                <Button
-                  key={subject.id}
-                  variant="outline"
-                  size="sm"
-                  className="bg-primary/10 text-primary border-primary/20"
-                >
-                  {subject.name}
-                </Button>
-              ))}
-            </div>
-
-            {/* Chapters List */}
-            <div className="space-y-4">
-              {getStudentSubjects(selectedStudent?.id || '').map((subject) => (
-                <div key={subject.id}>
-                  <h4 className="font-semibold mb-3">{subject.name} Chapters</h4>
-                  {(!subject.chapters || subject.chapters.length === 0) ? (
-                    <div className="bg-muted/50 rounded-lg p-6 text-center">
-                      <p className="text-muted-foreground mb-3">No progress logged yet.</p>
-                      <Button variant="default" size="sm">
-                        Start Chapter
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {subject.chapters.map((chapter: any, index: number) => (
-                        <div
-                          key={chapter.id}
-                          className="flex items-center justify-between p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                        >
-                          <div className="flex items-center gap-3">
-                            <span className="text-sm font-medium">{index + 1}. {chapter.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            {chapter.completed ? (
-                              <Badge variant="secondary" className="text-xs">Completed</Badge>
-                            ) : (
-                              <Button size="sm" variant="outline">
-                                Start Chapter
-                              </Button>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <TimelineModal
+        student={selectedStudent}
+        open={showTimeline}
+        onOpenChange={setShowTimeline}
+      />
     </div>
   );
 }

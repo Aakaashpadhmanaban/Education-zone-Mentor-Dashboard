@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays } from 'date-fns';
 import { AddDoubtModal } from '@/components/doubts/AddDoubtModal';
+import { StudentDoubtModal } from '@/components/doubts/StudentDoubtModal';
 import type { Student } from '@/types';
 
 export default function DoubtBox() {
@@ -18,6 +19,8 @@ export default function DoubtBox() {
   const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedStudentForView, setSelectedStudentForView] = useState<Student | null>(null);
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
 
   const filteredStudents = students.filter((student) => {
     if (!showArchived && student.archived) return false;
@@ -47,6 +50,11 @@ export default function DoubtBox() {
   const handleAddDoubt = (student: Student) => {
     setSelectedStudent(student);
     setIsModalOpen(true);
+  };
+
+  const handleViewStudentDoubts = (student: Student) => {
+    setSelectedStudentForView(student);
+    setIsViewModalOpen(true);
   };
 
   return (
@@ -147,8 +155,13 @@ export default function DoubtBox() {
             const resolvedDoubts = studentDoubts.filter(d => d.status === 'resolved').length;
 
             return (
-              <StudentCard key={student.id} student={student}>
-                <div className="space-y-3">
+              <div 
+                key={student.id} 
+                className="cursor-pointer" 
+                onClick={() => handleViewStudentDoubts(student)}
+              >
+                <StudentCard student={student}>
+                  <div className="space-y-3">
                   <div className="flex items-center gap-4">
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 rounded-full bg-destructive"></div>
@@ -174,16 +187,20 @@ export default function DoubtBox() {
                     </div>
                   )}
 
-                  <Button 
-                    className="w-full bg-primary text-white hover:bg-primary-hover" 
-                    size="sm"
-                    onClick={() => handleAddDoubt(student)}
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Doubt
-                  </Button>
-                </div>
-              </StudentCard>
+                    <Button 
+                      className="w-full bg-primary text-white hover:bg-primary-hover" 
+                      size="sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddDoubt(student);
+                      }}
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Doubt
+                    </Button>
+                  </div>
+                </StudentCard>
+              </div>
             );
           })}
         </div>
@@ -228,14 +245,23 @@ export default function DoubtBox() {
                       <span className="font-medium">{studentDoubts.length}</span>
                     </td>
                     <td className="p-4">
-                      <Button 
-                        size="sm"
-                        className="bg-primary text-white hover:bg-primary-hover"
-                        onClick={() => handleAddDoubt(student)}
-                      >
-                        <Plus className="h-4 w-4 mr-2" />
-                        Add Doubt
-                      </Button>
+                      <div className="flex gap-2">
+                        <Button 
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleViewStudentDoubts(student)}
+                        >
+                          View Doubts
+                        </Button>
+                        <Button 
+                          size="sm"
+                          className="bg-primary text-white hover:bg-primary-hover"
+                          onClick={() => handleAddDoubt(student)}
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Add Doubt
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -260,6 +286,13 @@ export default function DoubtBox() {
           onOpenChange={setIsModalOpen}
         />
       )}
+
+      {/* Student Doubt View Modal */}
+      <StudentDoubtModal
+        student={selectedStudentForView}
+        open={isViewModalOpen}
+        onOpenChange={setIsViewModalOpen}
+      />
     </div>
   );
 }
